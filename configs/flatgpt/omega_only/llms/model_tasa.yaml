@@ -1,0 +1,24 @@
+trf_class: Qwen2_5_Video_TASA3D
+hidden_size: 1024
+vocab_size: 256
+input_shape: [1000, 32, 32]  # T, H, W
+spatial_reduction: 16
+temporal_reduction: 1
+
+trf_args:
+  intermediate_size: 5504
+  num_hidden_layers: 18  # 36 in 3B model
+  num_attention_heads: 8
+  num_key_value_heads: 2
+  attention_dropout: 0.0
+  
+  max_position_embeddings: 60000  # should be higher than T' x H' x W'
+  rope_theta: 1000000.0
+  rope_scaling:  # can experiment with different types
+    type: mrope  # default
+    # mrope_section: 20  # should be hidden_size / attention_heads // 6
+    mrope_section: [16, 24, 24]
+
+  # tasa3d args
+  num_down: 4
+  channel_grow: 2

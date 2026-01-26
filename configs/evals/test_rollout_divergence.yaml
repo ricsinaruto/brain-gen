@@ -1,0 +1,68 @@
+# Test-only rollout divergence config to keep real-data tests stable.
+# Mirrors configs/evals/rollout_divergence.yaml with reduced bootstrap cost.
+
+rollout_workers: 16
+rollout_window_chunk: null
+
+prefix_times_s: [10, 20, 40, 60, 80, 120, 160]
+include_max_prefix: true
+
+controls:
+  target_swap:
+    enabled: true
+    num_swaps_per_context: 1
+    selection:
+      seed: 0
+  prompt_swap:
+    enabled: true
+    num_swaps_per_context: 1
+    selection:
+      seed: 0
+  real_real:
+    enabled: true
+    num_real_real_pairs_per_context: 1
+    pairing:
+      seed: 0
+
+plots:
+  name: rollout_divergence
+  metrics: ["covariance", "psd_jsd", "coherence"]
+  lines: ["correct", "target_swap", "prompt_swap", "real_real"]
+  show_iqr: true
+plot_formats: ["png", "pdf"]
+
+timeseries_divergence:
+  fs: 100
+  fmin: 1.0
+  fmax: 50.0
+  welch_nperseg_s: 1.0
+  welch_noverlap_frac: 0.5
+  stft_nperseg_s: 1.0
+  stft_noverlap_frac: 0.75
+  tail_sigma: 3.0
+  dfa_min_scale_s: 0.1
+  dfa_max_scale_s: 2.0
+  dfa_scales: 8
+  hurst_min_lag_s: 0.1
+  hurst_max_lag_s: 2.0
+  hurst_lags: 8
+
+stats:
+  unit_of_replication: context
+  horizons: all
+  comparisons:
+    [
+      correct_vs_target_swap,
+      correct_vs_prompt_swap,
+      correct_vs_real_real,
+      prompt_swap_vs_real_real,
+    ]
+  paired: true
+  report: median_delta, prob_improvement
+  inference:
+    ci:
+      method: bootstrap
+      n_boot: 500
+      seed: 0
+    test:
+      type: wilcoxon_signed_rank

@@ -1,0 +1,10 @@
+meta:
+  event_codes:
+preproc:
+  - apply_gradient_compensation: {grade: 3}
+  - notch_filter:       {freqs: 50, phase: 'minimum'}
+  - filter:             {l_freq: 1, h_freq: 50, phase: 'minimum'}
+  - resample:           {sfreq: 100, method: 'polyphase'}
+  - bad_channels:       {picks: mag}
+  - interpolate_bads:   {}
+  - find_events:        {min_duration: 0.05}

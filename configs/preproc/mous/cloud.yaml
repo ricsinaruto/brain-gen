@@ -1,0 +1,37 @@
+# Root directory containing raw dataset
+data_path: "/mnt/datasets/raw/MOUS/"
+stage1_path: "/mnt/datasets/preprocessed1to50hz/MOUS"
+save_path: "/mnt/datasets/1to50hz_ss_cont/MOUS"
+log_dir: "/vol/data/datasets/mous/full/1to50hz_ss_cont"
+delete_fif: false
+skip_done: true
+gen_report: true
+
+# Number of dask workers used by osl-ephys
+n_workers: 6
+use_dask: true
+
+# Length of each saved chunk in seconds
+chunk_seconds: 300
+source_space: true
+run_bad_chn: true
+manual_bad_chn: interpolate
+
+# Optional path to a custom OSL preprocessing config
+osl_config: configs/preproc/mous/osl.yaml
+
+# Parameters for additional stage-2 processing
+preproc_config:
+  normalize:
+    method: "robust"
+  clip:
+    std_factor: 5
+
+session_cleaning:
+  enabled: true
+  window_seconds: 5.0
+  std_threshold: 1.5
+  max_bad_pct: 20.0
+  clip_range: [-10.0, 10.0]
+  min_segment_seconds: 60.0
+  max_segment_seconds: 600.0

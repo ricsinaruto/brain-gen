@@ -1,0 +1,47 @@
+trf_class: xLSTM
+tok_class: DelimitedTokenizer
+hidden_size: 1024
+vocab_size: 257
+input_shape: [3000, 68, 1]  # T, H, W
+
+trf_args:
+  add_embedding_dropout: false
+  add_forward_backend_padding: false
+  add_out_norm: true
+  add_post_blocks_norm: true
+  add_post_norm: false
+  add_qk_norm: false
+  autocast_kernel_dtype: "bfloat16"
+  bos_token_id: null
+  cell_norm_eps: 1.0e-06
+  chunk_size: 64
+  chunkwise_kernel: "chunkwise--triton_xl_chunk"
+  embedding_dim: 1024
+  eos_token_id: null
+  eps: 1.0e-06
+  ffn_proj_factor: 2.667
+  ffn_round_up_to_multiple_of: 64
+  force_bos_token_insert: false
+  gate_soft_cap: 15.0
+  head_dim: 128
+  igate_bias_init_range: -10.0
+  inference_state_dtype: "float32"
+  mlstm_round_up_to_multiple_of: 64
+  mode: "train_with_padding"
+  model_type: "xlstm"
+  norm_eps: 1.0e-06
+  norm_reduction_force_float32: true
+  num_blocks: 20
+  num_heads: 8
+  output_logit_soft_cap: 30.0
+  pad_token_id: null
+  qk_dim_factor: 0.5
+  return_last_states: true
+  sequence_kernel: "native_sequence__triton"
+  step_kernel: "triton"
+  tie_word_embeddings: false
+  torch_dtype: "float32"
+  use_bias: false
+  use_cache: true
+  v_dim_factor: 1.0
+  weight_mode: "single"

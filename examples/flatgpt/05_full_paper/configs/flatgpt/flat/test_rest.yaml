@@ -1,0 +1,60 @@
+save_dir: /path/to/trainings/vqflatgpt/qwen2p5_flat
+
+model_name: FlatGPTEmbedsRVQ
+loss_name: CrossEntropyWithCodes
+model_config: /path/to/configs/flatgpt/flat/model_chmix.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root:
+    mous: /path/to/datasets/mous/cleaned
+    omega: /path/to/datasets/omega/cleaned
+    camcan: /path/to/datasets/camcan/cleaned
+  example_seconds: 61.44
+  overlap_seconds: 30.0
+  split_strategy: dataset
+  heldout_dataset: mous
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /path/to/datasets/cache/cleaned_61.44s_co-m
+
+dataloader:
+  batch_size: 16
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+
+eval_runner:
+  enabled: true
+  ckpt_path: /path/to/trainings/vqflatgpt/qwen2p5_flat/logs/version_X/checkpoints/last-checkpoint.ckpt
+  output_dir: /path/to/evals/rest_60s_main
+  max_batches: null
+  num_examples: 0
+  metrics_split: test
+
+  # STEP 1: Sample full sessions (concatenated chunks).
+  example_sampler:
+    seed: 42
+    split: test
+    task_type: rest  # optional; can be a list like [rest, auditory]
+    num_sessions: 100
+    context_length_s: 61.44
+    total_length_s: 296.96 # 4.95 minutes
+
+  # STEP 2: Generate rollouts from sampled contexts.
+  generator:
+    enabled: false
+    seed: 42
+    paired_file: /path/to/paired_rollouts.npy
+    rollouts_per_context: 1
+    rollout_batch_size: 72
+    max_context_tokens: 24576  # = 61.44 seconds
+    kv_overlap: 4096  # = 10.24 seconds
+    sampling:
+      strategy: roulette    
+
+  # STEP 3: Analyses (each uses its own YAML config).
+
+  token_summary:
+    enabled: true
+    tokens_per_second: 400

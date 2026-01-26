@@ -1,0 +1,24 @@
+trf_class: Qwen2_5_Video
+hidden_size: 1200
+vocab_size: 16384
+input_shape: [8192, 68, 4]  # T, H, W
+spatial_reduction: [16, 1]
+temporal_reduction: 4
+
+tokenizer_path: /vol/data/trainings/all/brainomni_channelmix/logs/version_17/checkpoints/best-checkpoint-epoch00019.ckpt
+
+trf_args:
+  intermediate_size: 4560
+  num_hidden_layers: 12  # 36 in 3B model
+  head_dim: 120
+  num_attention_heads: 10
+  num_key_value_heads: 2
+  attention_dropout: 0.0
+  
+  max_position_embeddings: 32768  # should be higher than T' x H' x W'
+  rope_theta: 1500000.0
+  rope_scaling:
+    mrope_section: 20
+    rope_type: default
+
+  _attn_implementation: sdpa

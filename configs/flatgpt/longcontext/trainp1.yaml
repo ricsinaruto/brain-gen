@@ -1,0 +1,87 @@
+save_dir: /vol/data/trainings/all_clean/vqflatgpt/qwen2p5_longcontext
+resume_from: /vol/data/trainings/all_clean/vqflatgpt/qwen2p5_longcontext/logs/version_2/checkpoints/best-checkpoint-epoch00001.ckpt
+
+model_name: FlatGPTEmbedsRVQ
+loss_name: CrossEntropyWithCodes
+model_config: configs/vqflatgpt/longcontext/modelp1.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root:
+    mous: /vol/data/datasets/mous/full/cleaned
+    omega: /vol/data/datasets/omega/full/cleaned
+    camcan: /vol/data/datasets/camcan/full/cleaned
+  example_seconds: 20.48
+  overlap_seconds: 10.0
+  split_strategy: dataset
+  heldout_dataset: mous
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /vol/data/datasets/all/cache/cleaned_20.48s_co-m
+
+dataloader:
+  batch_size: 24
+  num_workers: 12
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+  drop_last: true
+
+lightning:
+  lr: 2.0e-4
+  weight_decay: 0.1  # 0.1 in qwen
+  compile: true
+  lr_warmup:
+    steps: 2000      # counts scheduler steps (or epochs if interval is epoch)
+    interval: step   # optional; defaults to scheduler interval
+
+trainer:
+  tune_batch_size: false
+  max_epochs: 100
+  accelerator: cuda
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 1
+  num_sanity_val_steps: 0
+  log_every_n_steps: 500
+  precision: bf16-mixed
+  gradient_clip_val: 1.0  # 1.0 in qwen
+  early_stopping:
+    monitor: val/loss
+    patience: 3
+
+eval_runner:
+  enabled: true
+  modal_function: runevalsh200
+  max_batches: 1000
+  num_examples: 0
+
+  # STEP 1: Sample full sessions (concatenated chunks).
+  example_sampler:
+    seed: 42
+    split: val
+    task_type: rest  # optional; can be a list like [rest, auditory]
+    num_sessions: 50
+    context_length_s: 61.44
+    total_length_s: 307.2 # 288
+
+  # STEP 2: Generate rollouts from sampled contexts.
+  generator:
+    enabled: true
+    seed: 42
+    paired_file: paired_rollouts.npy
+    rollouts_per_context: 1
+    rollout_batch_size: 50
+    max_context_tokens: 8192  # = 20.48 seconds
+    kv_overlap: 4096  # = 10.24 seconds
+    sampling:
+      strategy: roulette    
+
+  # STEP 3: Analyses (each uses its own YAML config).
+  analyses:
+    - class: RolloutSlidingWindowAnalysis
+      config: configs/vqflatgpt/sliding_window_full.yaml
+    - class: RolloutDivergenceAnalysis
+      config: configs/vqflatgpt/rollout_divergence_full.yaml
+
+  token_summary:
+    enabled: true
+    tokens_per_second: 400

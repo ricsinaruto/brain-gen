@@ -1,0 +1,69 @@
+# Scaled-down evaluation config for local runs.
+
+save_dir: tmp/examples/flatgpt/flatgpt
+
+model_name: FlatGPTEmbedsRVQ
+loss_name: CrossEntropyWithCodes
+model_config: examples/flatgpt/03_training/configs/flatgpt_model_small.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root:
+    omega: data/omega/small/1to50hz_ss_cont
+    camcan: data/camcan/small/1to50hz_ss_cont
+    mous: data/mous/small/1to50hz_ss_cont
+  example_seconds: 10.24
+  overlap_seconds: 0.0
+  split_strategy: dataset
+  heldout_dataset: mous
+  refresh_cache: false
+  cache_dir: tmp/examples/flatgpt/cache/flatgpt_10p24s
+
+dataloader:
+  batch_size: 1
+  num_workers: 0
+  prefetch_factor: null
+  pin_memory: false
+  persistent_workers: false
+
+trainer:
+  accelerator: cpu
+
+eval_runner:
+  device: cpu
+  compile: false
+  ckpt_path: tmp/examples/flatgpt/flatgpt/logs/version_0/checkpoints/last-checkpoint-epoch00001.ckpt
+  output_dir: logs/version_0/evals/small
+  max_batches: 1
+  num_examples: 0
+  metrics_split: test
+
+  example_sampler:
+    seed: 0
+    split: test
+    task_type: auditory
+    num_sessions: 1
+    context_length_s: 10.24
+    total_length_s: 20.48
+
+  generator:
+    enabled: true
+    seed: 0
+    paired_file: paired_rollouts.npy
+    rollouts_per_context: 1
+    rollout_batch_size: 1
+    kv_overlap: 0.5
+    sampling:
+      strategy: top_p
+      top_p: 0.9
+      temperature: 1.0
+
+  analyses:
+    - class: RolloutSlidingWindowAnalysis
+      config: examples/flatgpt/04_eval/configs/analyses/sliding_window_small.yaml
+    - class: RolloutDivergenceAnalysis
+      config: examples/flatgpt/04_eval/configs/analyses/rollout_divergence_small.yaml
+
+  token_summary:
+    enabled: true
+    tokens_per_second: 200

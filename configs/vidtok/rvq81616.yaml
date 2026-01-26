@@ -1,0 +1,23 @@
+encoder:
+  double_z: false
+  z_channels: 2048
+  in_channels: 1
+  out_ch: 1
+  ch: 64
+  ch_mult: [1, 2, 4, 4, 4]
+  tempo_ds: [0, 1, 2]
+  tempo_us: [2, 3, 4]
+  time_downsample_factor: 8
+  num_res_blocks: 2
+  dropout: 0.0
+  use_checkpoint: false
+  init_pad_mode: replicate
+  norm_type: layernorm
+  interpolation_mode: nearest
+  fix_encoder: false
+  fix_decoder: false
+
+regularizer:
+  codebook_size: 16384
+  codebook_dim: 2048
+  num_quantizers: 8

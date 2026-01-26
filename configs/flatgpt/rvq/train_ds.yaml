@@ -1,0 +1,85 @@
+save_dir: /vol/data/trainings/all/vqflatgpt/qwen2p5_rvq
+resume_from: null
+
+model_name: FlatGPTRVQ
+loss_name: CrossEntropyWithCodes
+model_config: configs/vqflatgpt/all/rvq/model.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root:
+    mous: /vol/data/datasets/mous/full/1to50hz_ss_cont
+    omega: /vol/data/datasets/omega/full/1to50hz_ss_cont2  # IMPORTANT
+    camcan: /vol/data/datasets/camcan/full/1to50hz_ss_cont
+  example_seconds: 61.44
+  overlap_seconds: 30.0
+  split_strategy: dataset
+  heldout_dataset: mous
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /vol/data/datasets/all/cache/1to50hz_ss_cont_61.44s_co-m
+
+dataloader:
+  batch_size: 8
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+
+lightning:
+  lr: 1.0e-4
+  weight_decay: 0.1  # 0.1 in qwen
+  compile: true
+  lr_warmup:
+    steps: 500      # counts scheduler steps (or epochs if interval is epoch)
+    interval: step   # optional; defaults to scheduler interval
+
+trainer:
+  tune_batch_size: false
+  max_epochs: 100
+  accelerator: cuda
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 1
+  num_sanity_val_steps: 0
+  log_every_n_steps: 100
+  precision: bf16-mixed
+  gradient_clip_val: 1.0  # 1.0 in qwen
+  early_stopping:
+    monitor: val/loss
+    patience: 5
+
+eval_runner:
+  enabled: true
+  max_batches: 1000
+  num_examples: 0
+
+  # STEP 1: Sample full sessions (concatenated chunks).
+  example_sampler:
+    seed: 42
+    split: val
+    task_type: rest  # optional; can be a list like [rest, auditory]
+    num_sessions: 10
+    context_length_s: 61.44
+    total_length_s: 184.32 # 288
+
+  # STEP 2: Generate rollouts from sampled contexts.
+  generator:
+    enabled: true
+    seed: 42
+    paired_file: paired_rollouts.npy
+    rollouts_per_context: 1
+    rollout_batch_size: 10
+    kv_overlap: 128  # 1024
+    sampling:
+      strategy: roulette
+      top_p: 0.95      
+
+  # STEP 3: Analyses (each uses its own YAML config).
+  analyses:
+    - class: RolloutSlidingWindowAnalysis
+      config: configs/vqflatgpt/all/sliding_window.yaml
+    - class: RolloutDivergenceAnalysis
+      config: configs/vqflatgpt/all/rollout_divergence.yaml
+
+  token_summary:
+    enabled: true
+    tokens_per_second: 400

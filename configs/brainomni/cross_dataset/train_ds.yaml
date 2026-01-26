@@ -1,0 +1,57 @@
+save_dir: /vol/data/trainings/all/brainomni
+resume_from: /vol/data/trainings/all/brainomni/logs/version_21/checkpoints/best-checkpoint-epoch00003.ckpt
+
+model_name: BrainOmniCausalTokenizer
+loss_name: BrainOmniCausalTokenizerLoss
+model_config: configs/brainomni_tok/all/tokenizer10s.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root:
+    mous: /vol/data/datasets/mous/full/cleaned
+    omega: /vol/data/datasets/omega/full/cleaned
+    camcan: /vol/data/datasets/camcan/full/cleaned
+  example_seconds: 10.24
+  overlap_seconds: 5.0
+  split_strategy: dataset
+  heldout_dataset: mous
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /vol/data/datasets/all/cache/cleaned_10.24s_co-m
+
+dataloader:
+  batch_size: 80
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+  drop_last: true
+
+eval_runner:
+  enabled: true
+  max_batches: 100
+  num_examples: 10
+
+lightning:
+  lr: 5.0e-5
+  resume_lr: 5.0e-5
+  weight_decay: 0.0
+  resume_weight_decay: 0.0
+  lr_warmup:
+    steps: 1000      # counts scheduler steps (or epochs if interval is epoch)
+    interval: step   # optional; defaults to scheduler interval
+
+trainer:
+  tune_batch_size: false
+  accelerator: cuda
+  precision: bf16-mixed
+  gradient_clip_val: 2.0
+
+  max_epochs: 100
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 1
+  log_every_n_steps: 100
+  num_sanity_val_steps: 0
+
+  early_stopping:
+    monitor: val/loss
+    patience: 3

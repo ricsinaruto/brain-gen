@@ -1,0 +1,15 @@
+window_length: 256  # paper uses 2 seconds, we use 2.56s
+n_filters: 128  # 32
+ratios: [2, 2, 2]  # 8,4,2
+kernel_size: 5  # 5
+last_kernel_size: 5  # 5
+n_dim: 2048  # 256
+n_neuro: 8  # 16
+n_head: 16  # 4
+
+codebook_size: 16384  # 512
+codebook_dim: 2048  # 256
+num_quantizers: 4  # 4
+
+sensor_space: "sensor"  # source or sensor
+shuffle_channels: true  # shuffle channels

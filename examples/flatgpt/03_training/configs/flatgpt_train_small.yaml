@@ -1,0 +1,52 @@
+# Scaled-down FlatGPT training config for small local data.
+
+save_dir: tmp/examples/flatgpt/flatgpt
+resume_from: null
+
+model_name: FlatGPTEmbedsRVQ
+loss_name: CrossEntropyWithCodes
+model_config: examples/flatgpt/03_training/configs/flatgpt_model_small.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root:
+    omega: data/omega/small/1to50hz_ss_cont
+    camcan: data/camcan/small/1to50hz_ss_cont
+    mous: data/mous/small/1to50hz_ss_cont
+  example_seconds: 10.24
+  overlap_seconds: 0.0
+  split_strategy: dataset
+  heldout_dataset: mous
+  refresh_cache: true
+  cache_dir: tmp/examples/flatgpt/cache/flatgpt_10p24s
+
+dataloader:
+  batch_size: 1
+  num_workers: 0
+  prefetch_factor: null
+  pin_memory: false
+  persistent_workers: false
+
+lightning:
+  lr: 5.0e-4
+  weight_decay: 0.01
+  compile: false
+  lr_warmup:
+    steps: 10
+    interval: step
+
+trainer:
+  tune_batch_size: false
+  accelerator: cpu
+  precision: 32
+  gradient_clip_val: 1.0
+
+  max_epochs: 1
+  limit_train_batches: 2
+  limit_val_batches: 1
+  check_val_every_n_epoch: 1
+  num_sanity_val_steps: 0
+  log_every_n_steps: 1
+
+eval_runner:
+  enabled: false

@@ -1,0 +1,58 @@
+save_dir: /vol/data/trainings/omega/1to50hz_ss/flatgpt/channelwise
+resume_from: null
+
+model_name: FlatGPTMix
+model_config: configs/flatgpt/channelwise/model_small.yaml
+loss_name: CrossEntropyWithCodes
+
+datasplitter:
+  dataset_class: ChunkDataset3D
+  dataset_root: /vol/data/datasets/omega/full/1to50hz_ss
+  example_seconds: 10
+  overlap_seconds: 5
+  val_ratio: 0.1
+  test_ratio: 0.1
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /vol/data/datasets/omega/full/cache/1to50hz_ss_10s
+
+dataloader:
+  batch_size: 2
+  num_workers: 8
+  prefetch_factor: 2
+  pin_memory: true
+  persistent_workers: true
+
+lightning:
+  lr: 2.0e-5
+  weight_decay: 0.1  # 0.1 in qwen
+  compile: false
+  lr_scheduler:
+    class_name: CosineAnnealingLR
+    eta_min: 2.0e-6
+    T_max: 100
+
+eval_runner:
+  enabled: true
+  use_modal: true
+  modal_app: brain-gen
+  modal_function: runevals
+  max_batches: 1000
+  num_examples: 0
+  mu: 255
+  generate:
+    enabled: true
+    top_p: 0.8
+    kv_overlap: 10
+    seconds: 30
+
+trainer:
+  max_epochs: 100
+  accelerator: cuda
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 1
+  log_every_n_steps: 1000
+  precision: bf16-mixed
+  gradient_clip_val: 1.0  # 1.0 in qwen
+  early_stopping:
+    monitor: val_loss
+    patience: 10

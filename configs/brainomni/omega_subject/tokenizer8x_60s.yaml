@@ -1,0 +1,19 @@
+window_length: 5760
+n_filters: 256  # 32, final size is n_filters * 2^len(ratios)
+ratios: [2, 2, 2]  # 8,4,2
+kernel_size: 5  # 5
+last_kernel_size: 5  # 5
+n_dim: 2048  # 256
+n_neuro: 4  # 16
+n_head: 16  # 4
+
+lstm_layers: 0  # 2
+n_residual_layers: 2  # 1
+
+codebook_size: 16384  # 512
+codebook_dim: 2048  # 256
+num_quantizers: 8  # 4
+
+compile: false
+shuffle_channels: true
+num_sensors: 68

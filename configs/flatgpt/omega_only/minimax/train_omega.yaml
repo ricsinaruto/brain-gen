@@ -1,0 +1,58 @@
+save_dir: /vol/data/trainings/omega/1to50hz_ss/flatgpt/brainomni/minimax
+resume_from: null
+
+model_name: FlatGPTEmbedsRVQ
+loss_name: CrossEntropyWithCodes
+model_config: configs/flatgpt/brainomni/minimax/model.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root: /vol/data/datasets/omega/full/1to50hz_ss_cont_1chunk
+  example_seconds: 57.6  # divisible by 1.28
+  overlap_seconds: 30
+  val_ratio: 0.1
+  test_ratio: 0.1
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /vol/data/datasets/omega/full/cache/1to50hz_ss_cont_1chunk_57.6
+
+dataloader:
+  batch_size: 2
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+
+lightning:
+  lr: 1.0e-4
+  weight_decay: 0.1  # 0.1 in qwen
+  lr_scheduler:
+    class_name: CosineAnnealingLR
+    eta_min: 1.0e-5
+    T_max: 100
+
+trainer:
+  max_epochs: 100
+  accelerator: cuda
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 1
+  log_every_n_steps: 100
+  precision: bf16-mixed
+  gradient_clip_val: 1.0  # 1.0 in qwen
+  early_stopping:
+    monitor: val_loss
+    patience: 5
+
+eval_runner:
+  enabled: true
+  use_modal: true
+  modal_app: brain-gen
+  modal_function: runevals
+  max_batches: 1000
+  num_examples: 0
+  generate:
+    enabled: true
+    num_runs: 3
+    kv_overlap: 32
+    seconds: 115.2
+    top_p: 1.0
+

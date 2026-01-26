@@ -1,0 +1,39 @@
+# Configuration for preprocessing pipeline
+# Paths should be adjusted per environment
+
+# Root directory containing raw dataset
+data_path: "/mnt/datasets/raw/Camcan/"
+stage1_path: "/mnt/datasets/1to50hz_ss_cont_pcaflip/Camcan"
+save_path: "/mnt/datasets/1to50hz_ss_cont/Camcan"
+log_dir: "/vol/data/datasets/camcan/full/1to50hz_ss_cont"
+delete_fif: false
+maxwell: true
+skip_done: true
+gen_report: true
+
+# Number of dask workers used by dast
+n_workers: 12
+use_dask: true
+
+# Length of each saved chunk in seconds
+chunk_seconds: 300
+source_space: true
+
+# Optional path to a custom OSL preprocessing config
+osl_config: configs/preproc/camcan/osl.yaml
+
+# Parameters for additional stage-2 processing
+preproc_config:
+  normalize:
+    method: "robust"
+  clip:
+    std_factor: 5
+
+session_cleaning:
+  enabled: true
+  window_seconds: 5.0
+  std_threshold: 1.5
+  max_bad_pct: 20.0
+  clip_range: [-10.0, 10.0]
+  min_segment_seconds: 60.0
+  max_segment_seconds: 600.0

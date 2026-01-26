@@ -1,0 +1,74 @@
+trf_class: FalconH1
+tok_class: DelimitedTokenizer
+hidden_size: 1024
+vocab_size: 257
+input_shape: [1000, 68, 1]  # T, H, W
+
+trf_args:
+
+  model_type: falcon_h1
+  torch_dtype: "bfloat16"
+  max_position_embeddings: 262144
+
+  bos_token_id: null
+  eos_token_id: null
+  pad_token_id: null
+
+  tie_word_embeddings: false
+  use_cache: true
+
+  hidden_size: 768            # was 1024
+  intermediate_size: 1536     # was 2048 (kept 2x hidden_size)
+  num_hidden_layers: 12
+  num_attention_heads: 8
+  num_key_value_heads: 2
+  head_dim: 64
+
+  hidden_act: "silu"
+  initializer_range: 0.02
+  rms_norm_eps: 1.0e-5
+
+  attention_bias: false
+  attention_dropout: 0.0
+  attention_in_multiplier: 1.0
+  attention_out_multiplier: 0.9375
+  key_multiplier: 0.390625
+  lm_head_multiplier: 0.0390625
+  embedding_multiplier: 5.656854249492381
+
+  attn_layer_indices: null
+  num_logits_to_keep: 1
+
+  rope_scaling: null
+  rope_theta: 100000000000.0
+
+  mlp_expansion_factor: 8
+  mlp_bias: false
+  mlp_multipliers:
+    - 0.8838834764831844
+    - 0.5859375
+
+  projectors_bias: false
+
+  mamba_chunk_size: 128
+  mamba_conv_bias: true
+  mamba_d_conv: 4
+  mamba_d_head: 64
+  mamba_d_ssm: 1152          # scaled from 1536 to keep ≈1.5x hidden_size
+  mamba_d_state: 128
+  mamba_expand: 2
+  mamba_n_groups: 1
+  mamba_n_heads: 18          # was 24, to keep mamba_d_ssm = n_heads * d_head
+  mamba_norm_before_gate: false
+  mamba_proj_bias: false
+  mamba_rms_norm: false
+  mamba_use_mlp: true
+
+  ssm_in_multiplier: 1.25
+  ssm_out_multiplier: 0.23570226039551587
+  ssm_multipliers:
+    - 0.3535533905932738
+    - 0.25
+    - 0.3535533905932738
+    - 0.5
+    - 0.3535533905932738

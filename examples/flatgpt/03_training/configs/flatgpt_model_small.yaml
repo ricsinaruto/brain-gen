@@ -1,0 +1,29 @@
+# Scaled-down FlatGPT model config for local CPU runs.
+
+trf_class: Qwen2_5_Video
+hidden_size: 128
+vocab_size: 1024
+input_shape: [1024, 68, 2]  # T, H, W
+spatial_reduction: [16, 1]
+temporal_reduction: 4
+
+tokenizer_path: tmp/examples/flatgpt/tokenizer/logs/version_9/checkpoints/best-checkpoint-epoch00001.ckpt
+
+token_corruption_cfg:
+  enabled: false
+
+trf_args:
+  intermediate_size: 256
+  num_hidden_layers: 2
+  head_dim: 32
+  num_attention_heads: 4
+  num_key_value_heads: 2
+  attention_dropout: 0.0
+
+  max_position_embeddings: 4096
+  rope_theta: 10000.0
+  rope_scaling:
+    mrope_section: 4
+    rope_type: default
+
+  _attn_implementation: sdpa

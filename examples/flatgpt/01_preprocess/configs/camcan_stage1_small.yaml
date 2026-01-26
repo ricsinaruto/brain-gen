@@ -1,0 +1,18 @@
+# Stage-1 preprocessing (OSL + Maxwell) on the small CamCAN subset.
+# Uses existing outputs in data/camcan/small/1to50hz_cont to keep this quick.
+
+data_path: "data/camcan/raw"
+save_path: "data/camcan/small/1to50hz_cont"
+stage1_path: "data/camcan/small/1to50hz_cont"
+log_dir: "tmp/examples/flatgpt/preproc/camcan/stage1"
+
+maxwell: true
+
+delete_fif: false
+skip_done: true
+gen_report: true
+
+n_workers: 8
+use_dask: true
+
+osl_config: configs/preproc/camcan/osl.yaml

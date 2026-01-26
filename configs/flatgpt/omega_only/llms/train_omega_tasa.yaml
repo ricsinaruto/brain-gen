@@ -1,0 +1,49 @@
+model_config: configs/flatgpt/model_smollm.yaml
+augmentations: configs/augmentations.yaml
+
+# save_dir: trainings/omega/2sub/1to50hz_ss/flatgpt
+save_dir: /vol/data/trainings/omega/2sub/1to50hz_ss/flatgpt/smollm
+resume_from: null
+
+model_name: FlatGPT
+loss_name: CrossEntropyWithCodes
+
+datasplitter:
+  dataset_class: ChunkDataset3D
+  # dataset_root: /path/to/datasets/omega/preprocessed_1to50hz_ss_small
+  dataset_root: /vol/data/datasets/Omega/preprocessed_1to50hz_ss_small
+  example_seconds: 2
+  overlap_seconds: 1
+  val_ratio: 0.1
+  test_ratio: 0.1
+  dataset_kwargs:
+    fill_value: 127
+
+dataloader:
+  batch_size: 4
+  num_workers: 0
+  prefetch_factor: null
+  pin_memory: true
+  persistent_workers: false
+
+loss: {}
+
+lightning:
+  lr: 2.0e-5
+  weight_decay: 0.1  # 0.1 in qwen
+  compile: false
+  sfreq: 100
+  lr_scheduler:
+    class_name: CosineAnnealingLR
+    eta_min: 2.0e-6
+    T_max: 100
+
+trainer:
+  max_epochs: 100
+  accelerator: cuda
+  profiler: null
+  fast_dev_run: false
+  check_val_every_n_epoch: 1
+  log_every_n_steps: 20
+  precision: bf16-mixed
+  gradient_clip_val: 1.0  # 1.0 in qwen

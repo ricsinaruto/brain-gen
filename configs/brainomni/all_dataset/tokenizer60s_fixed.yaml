@@ -1,0 +1,15 @@
+window_length: 1024  # 8 * 128 (og)
+ratios: [2, 2, 2] 
+kernel_size: 5
+last_kernel_size: 5
+n_filters: 128
+n_dim: 1024  # 2048
+n_neuro: 8
+n_head: 8  # 16
+
+codebook_size: 16384  # 16384
+codebook_dim: 1024  # 2048
+num_quantizers: 4
+
+compile: false
+num_sensors: 68

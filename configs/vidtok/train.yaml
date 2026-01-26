@@ -1,0 +1,62 @@
+save_dir: /vol/data/trainings/omega/1to50hz/vidtok81616
+resume_from: null
+
+model_name: Vidtok
+loss_name: VidtokLoss
+model_config: configs/vidtok/model81616.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetInterpolatedImage
+  dataset_root: /vol/data/datasets/omega/full/1to50hz_cont
+  example_seconds: 10.24
+  overlap_seconds: 0.0
+  val_ratio: 0.1
+  test_ratio: 0.1
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /vol/data/datasets/omega/full/cache/1to50hz_cont_10.24s
+  dataset_kwargs:
+    image_size: 32  # 32
+    sigma_scale: 0.75  # 0.75
+    r_max_factor: 4.0  # 4.0
+
+dataloader:
+  batch_size: 8
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+
+loss:
+  learn_logvar: true
+  regularization_weights: {'aux_loss': 0.5, 'kl_loss': 0.000001}
+  temporal_pcc_weight: 1.0
+  temporal_freq_amp_weight: 1.0
+  temporal_freq_phase_weight: 0.5
+
+lightning:
+  lr: 5.0e-5
+  weight_decay: 0.0
+  compile: true
+
+eval_runner:
+  enabled: true
+  use_modal: true
+  modal_app: brain-gen
+  modal_function: runevals
+  max_batches: 10
+  num_examples: 5
+  lit_module: VidtokLightning
+
+trainer:
+  tune_batch_size: true
+  # overfit_batches: 10
+  max_epochs: 100
+  accelerator: cuda
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 1
+  log_every_n_steps: 100
+  precision: bf16-mixed
+  gradient_clip_val: 1.0
+  early_stopping:
+    monitor: val/loss
+    patience: 5

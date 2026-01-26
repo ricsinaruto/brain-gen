@@ -1,0 +1,59 @@
+# save_dir: trainings/omega/2sub/1to50hz_ss/flatgpt
+save_dir: /vol/data/trainings/omega/2sub/1to50hz_ss/flatgpt/smollm/block_causal
+resume_from: null
+
+model_name: FlatGPT
+model_config: configs/flatgpt/smollm/model_block.yaml
+loss_name: CrossEntropyWithCodes
+
+datasplitter:
+  dataset_class: ChunkDataset3D
+  # dataset_root: /path/to/datasets/omega/preprocessed_1to50hz_ss_small
+  dataset_root: /vol/data/datasets/Omega/preprocessed_1to50hz_ss_small
+  example_seconds: 10
+  overlap_seconds: 5
+  val_ratio: 0.1
+  test_ratio: 0.1
+  dataset_kwargs:
+    fill_value: 127
+
+dataloader:
+  batch_size: 10
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+
+lightning:
+  lr: 2.0e-4
+  weight_decay: 0.0  # 0.1 in qwen
+  compile: false
+  lr_scheduler:
+    class_name: CosineAnnealingLR
+    eta_min: 2.0e-5
+    T_max: 50
+
+eval_runner:
+  enabled: true
+  use_modal: true
+  modal_app: brain-gen
+  modal_function: runevals
+  max_batches: 1000
+  num_examples: 0
+  generate:
+    enabled: true
+    top_p: 0.8
+    kv_overlap: 680
+    seconds: 10
+
+trainer:
+  max_epochs: 50
+  accelerator: cuda
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 1
+  log_every_n_steps: 20
+  precision: bf16-mixed
+  gradient_clip_val: 1.0  # 1.0 in qwen
+  early_stopping:
+    monitor: val_loss
+    patience: 10

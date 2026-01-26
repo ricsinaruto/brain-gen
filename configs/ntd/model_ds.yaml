@@ -1,0 +1,27 @@
+# Multi-dataset NTD model tuned for 1to50hz_ss_cont data.
+# signal_length=1024 corresponds to 10.24s at 100 Hz.
+signal_length: 6144
+signal_channel: 68
+mask_channel: 1  # append forecast mask channel for conditional prediction
+cond_dim: 0
+p_forecast: 0.8
+
+diffusion_time_steps: 500
+schedule: quad
+start_beta: 0.0001
+end_beta: 0.03
+ou_sigma2: 1.5
+ou_ell: 20
+noise_process: ou  # white
+
+net_hidden_channel: 32
+net_slconv_kernel_size: 257
+net_num_scales: 4
+net_num_blocks: 12
+net_num_off_diag: 12
+
+net_in_kernel_size: 1
+net_out_kernel_size: 1
+net_use_pos_emb: true
+net_padding_mode: circular
+net_use_fft_conv: false

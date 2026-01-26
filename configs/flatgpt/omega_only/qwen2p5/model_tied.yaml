@@ -1,0 +1,25 @@
+trf_class: Qwen2_5_Video
+hidden_size: 1536  # has to be divisible by the number of quantizers
+vocab_size: 16384
+input_shape: [5760, 68, 1]  # T, H, W
+spatial_reduction: [8, 1]
+temporal_reduction: 8
+
+# RVQ-aware FlatGPT variant
+quantizer_head: tied  # options: joint (single head) or tied (per-quantizer tied heads)
+quantizer_levels: 4
+
+tokenizer_path: /vol/data/trainings/omega/1to50hz_ss/brainomni_tok/logs/version_11/checkpoints/best-checkpoint-epoch00082.ckpt
+
+trf_args:
+  intermediate_size: 6144
+  num_hidden_layers: 12  # 36 in 3B model
+  num_attention_heads: 8
+  num_key_value_heads: 2
+  attention_dropout: 0.0
+  
+  max_position_embeddings: 32768  # should be higher than T' x H' x W'
+  rope_theta: 1000000.0
+  rope_scaling:  # can experiment with different types
+    type: default  # default
+    mrope_section: 32  # SHOULD BE hidden_size / attention_heads // 6

@@ -1,0 +1,62 @@
+save_dir: /vol/data/trainings/omega/1to50hz_ss/vidtok_rvq/
+resume_from: null
+
+model_name: VidtokRVQ
+loss_name: VidtokLoss
+model_config: configs/vidtok/rvq81616.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetInterpolatedImage
+  dataset_root: /vol/data/datasets/omega/full/1to50hz_ss_cont
+  example_seconds: 10.24
+  overlap_seconds: 0.0
+  val_ratio: 0.1
+  test_ratio: 0.1
+  split_strategy: subject
+  refresh_cache: false
+  cache_dir: /vol/data/datasets/omega/full/cache/1to50hz_ss_cont_10.24s_subject_img
+  dataset_kwargs:
+    image_size: 32
+    sigma_scale: 0.75
+    r_max_factor: 4.0
+
+dataloader:
+  batch_size: 4
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+  drop_last: true
+
+eval_runner:
+  enabled: true
+  max_batches: 100
+  num_examples: 10
+  lit_module: VidtokLightning
+
+loss:
+  learn_logvar: false
+  regularization_weights: {'aux_loss': 1.0}
+  temporal_pcc_weight: 1.0
+  temporal_freq_amp_weight: 1.0
+  temporal_freq_phase_weight: 0.5
+  temporal_cov_weight: 0.5
+
+lightning:
+  lr: 2.0e-6
+  weight_decay: 0.0
+  compile: false
+  lr_warmup:
+    steps: 2000
+    interval: step
+
+trainer:
+  tune_batch_size: true
+  max_epochs: 100
+  accelerator: cuda
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 5
+  log_every_n_steps: 100
+  precision: bf16-mixed
+  gradient_clip_val: 1.0
+  num_sanity_val_steps: 0

@@ -1,0 +1,27 @@
+# Sliding-window rollout metric summaries for generated vs real runs.
+# These settings are passed into RolloutSlidingWindowAnalysis.
+
+rollout_workers: 16
+rollout_window_chunk: null
+
+# Windowing for sliding metrics.
+window_length_s: 30.0
+stride_s: 5.0
+out_of_envelope_rate: mean  # options: mean | per_feature | none
+
+# Spectral + statistical settings used by rollout metrics.
+timeseries_divergence:
+  fs: 100
+  fmin: 1.0
+  fmax: 50.0
+  welch_nperseg_s: 1.0
+  welch_noverlap_frac: 0.5
+  stft_nperseg_s: 1.0
+  stft_noverlap_frac: 0.75
+  tail_sigma: 3.0
+  dfa_min_scale_s: 0.1
+  dfa_max_scale_s: 2.0
+  dfa_scales: 8
+  hurst_min_lag_s: 0.1
+  hurst_max_lag_s: 2.0
+  hurst_lags: 8

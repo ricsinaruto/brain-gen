@@ -1,0 +1,41 @@
+trf_class: FalconMamba
+tok_class: DelimitedTokenizer
+hidden_size: 1024
+vocab_size: 257
+input_shape: [3000, 68, 1]  # T, H, W
+
+trf_args:
+  model_type: falcon_mamba
+  torch_dtype: bfloat16
+
+  bos_token_id: null
+  eos_token_id: null
+  pad_token_id: null
+
+  hidden_act: silu
+  hidden_size: 1280          # scaled down from 4096
+  intermediate_size: 2560    # ≈ 2 * hidden_size (was 8192 = 2 * 4096)
+  num_hidden_layers: 14      # scaled down from 64
+
+  layer_norm_epsilon: 1.0e-5
+  initializer_range: 0.1
+  tie_word_embeddings: false
+  rescale_prenorm_residual: false
+  residual_in_fp32: true
+
+  # Mamba-specific hyperparameters (kept mostly the same, with rank scaled)
+  conv_kernel: 4
+  expand: 16
+  state_size: 16
+
+  time_step_floor: 0.0001
+  time_step_init_scheme: random
+  time_step_max: 0.1
+  time_step_min: 0.001
+  time_step_scale: 1.0
+  time_step_rank: 80         # scaled from 256 by ~hidden_size/4096
+
+  use_bias: false
+  use_conv_bias: true
+  use_cache: true
+

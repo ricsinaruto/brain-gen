@@ -1,0 +1,55 @@
+save_dir: /path/to/trainings/braintokmix
+resume_from: null
+
+model_name: BrainOmniCausalTokenizerSEANetChannelMix
+loss_name: BrainOmniCausalTokenizerLoss
+model_config: /path/to/configs/braintokmix/tokenizer10s_ds.yaml
+
+datasplitter:
+  dataset_class: ChunkDatasetReconstruction
+  dataset_root:
+    mous: /path/to/datasets/mous/cleaned
+    omega: /path/to/datasets/omega/cleaned
+    camcan: /path/to/datasets/camcan/cleaned
+  example_seconds: 10.24
+  overlap_seconds: 5.0
+  split_strategy: dataset
+  heldout_dataset: mous
+  refresh_cache: false  # need to refresh if any datasplitter args change
+  cache_dir: /path/to/datasets/cache/cleaned_10.24s_co-m
+
+dataloader:
+  batch_size: 480
+  num_workers: 16
+  prefetch_factor: 4
+  pin_memory: true
+  persistent_workers: true
+  drop_last: true
+
+eval_runner:
+  enabled: true
+  max_batches: 100
+  num_examples: 10
+
+lightning:
+  lr: 5.0e-5
+  weight_decay: 0.01
+  lr_warmup:
+    steps: 300      # counts scheduler steps (or epochs if interval is epoch)
+    interval: step   # optional; defaults to scheduler interval
+
+trainer:
+  tune_batch_size: false
+  accelerator: cuda
+  precision: bf16-mixed
+  gradient_clip_val: 1.0
+
+  max_epochs: 100
+  check_val_every_n_epoch: 1
+  checkpoint_cadence_epochs: 5
+  log_every_n_steps: 100
+  num_sanity_val_steps: 0
+
+  early_stopping:
+    monitor: val/loss
+    patience: 3

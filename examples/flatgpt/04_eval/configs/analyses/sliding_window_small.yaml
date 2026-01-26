@@ -1,0 +1,24 @@
+# Sliding-window rollout metrics for small local evals.
+
+rollout_workers: 1
+rollout_window_chunk: null
+
+window_length_s: 5.0
+stride_s: 2.5
+out_of_envelope_rate: mean
+
+timeseries_divergence:
+  fs: 100
+  fmin: 1.0
+  fmax: 50.0
+  welch_nperseg_s: 1.0
+  welch_noverlap_frac: 0.5
+  stft_nperseg_s: 1.0
+  stft_noverlap_frac: 0.75
+  tail_sigma: 3.0
+  dfa_min_scale_s: 0.1
+  dfa_max_scale_s: 1.0
+  dfa_scales: 6
+  hurst_min_lag_s: 0.1
+  hurst_max_lag_s: 1.0
+  hurst_lags: 6

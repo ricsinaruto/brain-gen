@@ -1,0 +1,52 @@
+trf_class: Gemma3
+tok_class: DelimitedTokenizer
+hidden_size: 640
+vocab_size: 257
+input_shape: [1000, 68, 1]  # T, H, W
+
+trf_args:
+  head_dim: 256
+  num_hidden_layers: 18
+  intermediate_size: 2048
+  num_attention_heads: 4
+  num_key_value_heads: 1
+
+  max_position_embeddings: 131072
+  rope_local_base_freq: 10000.0
+  rope_scaling: null
+  rope_theta: 1000000.0
+  sliding_window: 512
+  _sliding_window_pattern: 6
+
+  layer_types:
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - full_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - full_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - sliding_attention
+    - full_attention
+  torch_dtype: bfloat16
+  use_bidirectional_attention: false
+  use_cache: true
+  attn_logit_softcapping: null
+  bos_token_id: null
+  eos_token_id: null
+  pad_token_id: null
+  final_logit_softcapping: null
+  query_pre_attn_scalar: 256
+  rms_norm_eps: 1.0e-6
+  initializer_range: 0.02
+
+

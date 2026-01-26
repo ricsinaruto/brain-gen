@@ -1,0 +1,58 @@
+# Rollout divergence analysis settings for small local evals.
+
+rollout_workers: 1
+rollout_window_chunk: null
+
+prefix_times_s: [2, 4, 6, 8, 10]
+include_max_prefix: true
+
+controls:
+  target_swap:
+    enabled: true
+    num_swaps_per_context: 1
+    selection:
+      seed: 0
+  prompt_swap:
+    enabled: true
+    num_swaps_per_context: 1
+    selection:
+      seed: 0
+  real_real:
+    enabled: true
+    num_real_real_pairs_per_context: 1
+    pairing:
+      seed: 0
+
+plots:
+  lines: ["correct", "target_swap", "prompt_swap", "real_real"]
+  show_iqr: true
+
+timeseries_divergence:
+  fs: 100
+  fmin: 1.0
+  fmax: 50.0
+  welch_nperseg_s: 1.0
+  welch_noverlap_frac: 0.5
+  stft_nperseg_s: 1.0
+  stft_noverlap_frac: 0.75
+  tail_sigma: 3.0
+  dfa_min_scale_s: 0.1
+  dfa_max_scale_s: 1.0
+  dfa_scales: 6
+  hurst_min_lag_s: 0.1
+  hurst_max_lag_s: 1.0
+  hurst_lags: 6
+
+stats:
+  unit_of_replication: context
+  horizons: all
+  comparisons: [correct_vs_target_swap, correct_vs_prompt_swap, correct_vs_real_real]
+  paired: true
+  report: median_delta, prob_improvement
+  inference:
+    ci:
+      method: bootstrap
+      n_boot: 100
+      seed: 0
+    test:
+      type: wilcoxon_signed_rank

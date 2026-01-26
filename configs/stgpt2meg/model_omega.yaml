@@ -1,0 +1,18 @@
+num_channels: 68
+vocab_size: 256
+d_model: 1024
+layers: 12
+trf_block: STGPTBlock  # STGPTBlock, STGPTBlockParallel, STBlock
+
+trf_args:
+  attn_type: standard
+  mlp_type: standard
+
+  attn_args:
+    d_model: 1024
+    nheads: 8
+    dropout: 0.0
+    rope: true
+
+  mlp_args:
+    d_model: 1024

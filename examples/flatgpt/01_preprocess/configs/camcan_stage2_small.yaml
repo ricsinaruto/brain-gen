@@ -1,0 +1,31 @@
+# Stage-2 cleaning on the small CamCAN subset.
+
+data_path: "data/camcan/raw"
+stage1_path: "data/camcan/small/1to50hz_cont"
+save_path: "data/camcan/small/1to50hz_ss_cont"
+log_dir: "tmp/examples/flatgpt/preproc/camcan/stage2"
+
+delete_fif: false
+skip_done: true
+
+n_workers: 8
+use_dask: true
+
+chunk_seconds: 300
+source_space: true
+
+# Stage-2 transforms
+preproc_config:
+  normalize:
+    method: "robust"
+  clip:
+    std_factor: 5
+
+session_cleaning:
+  enabled: true
+  window_seconds: 5.0
+  std_threshold: 1.5
+  max_bad_pct: 20.0
+  clip_range: [-10.0, 10.0]
+  min_segment_seconds: 60.0
+  max_segment_seconds: 600.0
