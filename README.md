@@ -172,3 +172,7 @@ The full suite is also CPU‑friendly:
 ```bash
 conda run -n ephys-gpt pytest -q
 ```
+
+## Acknowledgements
+The creation of this codebase and the related research was fully funded by an AI Safety Grant from the Foresight Institute.
+
