@@ -1,5 +1,7 @@
 # brain-gen
 
+[Scaling Next-Brain-Token Prediction for MEG](https://arxiv.org/abs/2601.20138)
+
 Neural signal modeling toolkit for MEG/ephys research. The repo bundles
 preprocessing, dataset utilities, tokenizers, autoregressive/diffusion/conv
 models, and PyTorch Lightning training + evaluation workflows.
